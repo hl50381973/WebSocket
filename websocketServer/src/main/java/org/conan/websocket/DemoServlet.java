@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.util.ArrayList;
+import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -11,7 +12,7 @@ import org.apache.catalina.websocket.MessageInbound;
 import org.apache.catalina.websocket.StreamInbound;
 import org.apache.catalina.websocket.WebSocketServlet;
 import org.apache.catalina.websocket.WsOutbound;
-import org.conan.websocket.DemoServlet.MyMessageInbound;
+
 
 public class DemoServlet extends WebSocketServlet {
 
@@ -30,7 +31,7 @@ public class DemoServlet extends WebSocketServlet {
         return new MyMessageInbound();
     }
 
-    public class MyMessageInbound extends MessageInbound {
+    private class MyMessageInbound extends MessageInbound {
         WsOutbound myoutbound;
 
         @Override
@@ -39,7 +40,7 @@ public class DemoServlet extends WebSocketServlet {
                 System.out.println("Open Client.");
                 this.myoutbound = outbound;
                 mmiList.add(this);
-                outbound.writeTextMessage(CharBuffer.wrap("Hello!"));
+                outbound.writeTextMessage(CharBuffer.wrap("Hello! now is"+new Date()));
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -53,9 +54,9 @@ public class DemoServlet extends WebSocketServlet {
 
         @Override
         public void onTextMessage(CharBuffer cb) throws IOException {
-            System.out.println("Accept Message : " + cb);
+            System.out.println("Accept Message1 : " + cb);
             for (MyMessageInbound mmib : mmiList) {
-                CharBuffer buffer = CharBuffer.wrap(cb);
+                CharBuffer buffer = CharBuffer.wrap("send from server:"+cb);
                 mmib.myoutbound.writeTextMessage(buffer);
                 mmib.myoutbound.flush();
             }
